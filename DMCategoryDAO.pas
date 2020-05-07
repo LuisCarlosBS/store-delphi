@@ -41,13 +41,13 @@ begin
   lista := TList<TCategory>.Create;
   query1.SQL.Add('SELECT * FROM Categories');
   query1.Open;
-  query1.First;
-  for i := 0 to (query1.RowsAffected - 1) do
+  while not query1.Eof do
   begin
     category := TCategory.Create;
-    name := query1.Table.Rows[i].GetData('Name');
+    name := UTF8ToString(query1.FieldByName('CategoryName').AsString);
     category.setName(name);
     lista.Add(category);
+    query1.Next;
   end;
 
   Result := lista;
