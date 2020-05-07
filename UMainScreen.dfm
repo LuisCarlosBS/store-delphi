@@ -174,20 +174,27 @@ object Form1: TForm1
     TabOrder = 2
   end
   object scrlbxProducts: TScrollBox
-    Left = 279
+    Left = 280
     Top = 60
     Width = 954
     Height = 486
+    HorzScrollBar.Tracking = True
     VertScrollBar.Tracking = True
     Anchors = [akLeft, akTop, akRight, akBottom]
+    Padding.Left = 5
+    Padding.Top = 5
+    Padding.Right = 5
+    Padding.Bottom = 5
     TabOrder = 3
     object panelCard: TPanel
-      Left = 5
-      Top = 5
+      Left = 8
+      Top = 8
       Width = 180
-      Height = 200
+      Height = 225
+      Align = alCustom
       BevelWidth = 2
       TabOrder = 0
+      Visible = False
       OnMouseEnter = panelCardMouseEnter
       OnMouseLeave = panelCardMouseLeave
       object imageProduct: TImage
@@ -200,17 +207,24 @@ object Form1: TForm1
       end
       object labelPrice: TLabel
         Left = 8
-        Top = 152
+        Top = 180
         Width = 70
         Height = 13
         Caption = 'Pre'#231'o: R$ --,--'
       end
       object labelProvider: TLabel
         Left = 8
-        Top = 176
+        Top = 200
         Width = 89
         Height = 13
         Caption = 'Fornecido por: ----'
+      end
+      object labelPName: TLabel
+        Left = 8
+        Top = 160
+        Width = 16
+        Height = 13
+        Caption = '----'
       end
     end
   end
