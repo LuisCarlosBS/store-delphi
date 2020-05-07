@@ -10,6 +10,8 @@ object ProductDAO: TProductDAO
       'User_Name=SYSDBA'
       'Password=masterkey'
       'DriverID=FB')
+    Connected = True
+    LoginPrompt = False
     Left = 104
     Top = 112
   end
