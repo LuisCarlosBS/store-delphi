@@ -7,6 +7,7 @@ uses UCategory;
 type
   TProduct = class
     private
+      ID : Integer;
       IDCategory : Integer;
       ProductName : string;
       ProductDescription : string;
@@ -14,7 +15,7 @@ type
       ProductPicture : string;
       Active : Boolean;
     public
-      constructor Create(IDCategory : Integer; productName : string;
+      constructor Create(ID : Integer; IDCategory : Integer; productName : string;
       productDescription : string; unitPrice : Double; productPicture : string;
       active : Boolean); overload;
       constructor Create; overload;
@@ -24,8 +25,11 @@ type
       function GetUnitPrice : Double;
       function GetProductPicture : string;
       function GetActive : Boolean;
+      function GetID : Integer;
+      procedure SetID(ID : Integer);
       procedure SetIDCategory(IDCategory : Integer);
       procedure SetProductName(productName : string);
+      procedure SetProductDescription(productDescription : string);
       procedure SetUnitPrice(price : Double);
       procedure SetProductPicture(picturePath : string);
       procedure SetActive(active : Boolean);
@@ -39,10 +43,11 @@ begin
   inherited Create;
 end;
 
-constructor TProduct.Create(IDCategory: Integer; productName,
+constructor TProduct.Create(ID : Integer; IDCategory: Integer; productName,
   productDescription: string; unitPrice: Double; productPicture: string;
   active: Boolean);
 begin
+  Self.ID := ID;
   self.IDCategory := IDCategory;
   self.ProductName := productName;
   self.ProductDescription := productDescription;
@@ -54,6 +59,11 @@ end;
 function TProduct.GetActive: Boolean;
 begin
   Result := Self.Active;
+end;
+
+function TProduct.GetID: Integer;
+begin
+  Result := self.ID;
 end;
 
 function TProduct.GetIDCategory: Integer;
@@ -86,9 +96,19 @@ begin
   Self.Active := active;
 end;
 
+procedure TProduct.SetID(ID: Integer);
+begin
+  Self.ID := ID;
+end;
+
 procedure TProduct.SetIDCategory(IDCategory: Integer);
 begin
   self.IDCategory := IDCategory;
+end;
+
+procedure TProduct.SetProductDescription(productDescription: string);
+begin
+  Self.ProductDescription := productDescription;
 end;
 
 procedure TProduct.SetProductName(productName: string);
