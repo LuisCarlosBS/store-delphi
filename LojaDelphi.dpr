@@ -8,7 +8,9 @@ uses
   UCategory in 'UCategory.pas',
   UProduct in 'UProduct.pas',
   DMCategoryDAO in 'DMCategoryDAO.pas' {CategoryDAO: TDataModule},
-  DMProductDAO in 'DMProductDAO.pas' {ProductDAO: TDataModule};
+  DMProductDAO in 'DMProductDAO.pas' {ProductDAO: TDataModule},
+  UCategoryPanel in 'UCategoryPanel.pas',
+  UProductPanel in 'UProductPanel.pas';
 
 {$R *.res}
 
