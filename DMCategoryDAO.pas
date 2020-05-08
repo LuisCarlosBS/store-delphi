@@ -44,7 +44,7 @@ begin
   while not query1.Eof do
   begin
     category := TCategory.Create;
-    name := UTF8ToString(query1.FieldByName('CategoryName').AsString);
+    name := query1.FieldByName('CategoryName').AsString;
     category.setName(name);
     lista.Add(category);
     query1.Next;

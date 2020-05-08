@@ -16,6 +16,7 @@ object CategoryDAO: TCategoryDAO
         'ja Delphi\Database\STOREDELPHI.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
+      'CharacterSet=UTF8'
       'DriverID=FB')
     LoginPrompt = False
     Left = 200

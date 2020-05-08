@@ -9,8 +9,8 @@ object ProductDAO: TProductDAO
         'ja Delphi\Database\STOREDELPHI.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
+      'CharacterSet=UTF8'
       'DriverID=FB')
-    Connected = True
     LoginPrompt = False
     Left = 104
     Top = 112

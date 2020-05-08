@@ -48,10 +48,10 @@ begin
     product := TProduct.Create;
     product.SetID(queryLoadProducts.FieldByName('ID').AsInteger);
     product.SetIDCategory(queryLoadProducts.FieldByName('IDCategory').AsInteger);
-    product.SetProductName(UTF8ToString(queryLoadProducts.FieldByName('ProductName').AsString));
-    product.SetProductDescription(UTF8ToString(queryLoadProducts.FieldByName('ProductDescription').AsString));
+    product.SetProductName(queryLoadProducts.FieldByName('ProductName').AsString);
+    product.SetProductDescription(queryLoadProducts.FieldByName('ProductDescription').AsString);
     product.SetUnitPrice(queryLoadProducts.FieldByName('UnitPrice').AsFloat);
-    product.SetProductPicture(UTF8ToString(queryLoadProducts.FieldByName('ProductPicture').AsString));
+    product.SetProductPicture(queryLoadProducts.FieldByName('ProductPicture').AsString);
     product.SetActive(queryLoadProducts.FieldByName('Active').AsBoolean);
     products.Add(product);
     queryLoadProducts.Next;
