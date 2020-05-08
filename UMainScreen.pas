@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.Math, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, Vcl.Imaging.jpeg, JvScrollBox,
-  Vcl.ComCtrls, System.Generics.Collections, UCategory, UProduct;
+  Vcl.ComCtrls, System.Generics.Collections, UCategory, UProduct, UCategoryPanel, UProductPanel;
 
 type
   TForm1 = class(TForm)
@@ -36,8 +36,6 @@ type
   private
     procedure loadCategoryPanels(categories : TList<TCategory>);
     procedure scrollBoxCategoryResponsive;
-    procedure CategoryPanelsMouseEnter(Sender :TObject);
-    procedure CategoryPanelsMouseLeave(Sender :TObject);
     procedure CreateProductPanels(products : TList<TProduct>);
     procedure PositionProductPanels(panelWidth : integer; panelHeight : integer);
   public
@@ -63,7 +61,6 @@ var categoryDAO : TCategoryDAO;
     categories  : TList<TCategory>;
     products    : TList<TProduct>;
 begin
-
   scrlbxProducts.Color := TColor($E3E4E6);
   scrlbxCategories.Color := TColor($E3E4E6);
   categoryDAO := TCategoryDAO.Create(self);
@@ -96,100 +93,39 @@ end;
 
 procedure TForm1.loadCategoryPanels(categories: TList<TCategory>);
 var i: Integer;
-panel : TPanel;
+panel : TCategoryPanel;
 begin
   for i := 0 to (categories.Count - 1) do
     begin
-      panel := TPanel.Create(self);
+      panel := TCategoryPanel.Create(self);
       panel.OnClick := panelCategoryClick;
       panel.Name := 'panel' + categories.Items[i].getName;
-      panel.Height := 40;
-      panel.Width := 240;
-      panel.Cursor := StringToCursor('crHandPoint');
       panel.Top := (50 * i) + 5;
       if i = 0 then panel.Top := 5;
       panel.Left := 5;
       panel.Caption := categories.Items[i].getName;
-      panel.Visible := true;
       panel.Parent := scrlbxCategories;
-      panel.ParentColor := False;
-      panel.ParentBackground := false;
-      panel.OnMouseEnter := CategoryPanelsMouseEnter;
-      panel.OnMouseLeave := CategoryPanelsMouseLeave;
       createdCategoryPanels.Add(panel);
     end;
 end;
 
-procedure TForm1.CategoryPanelsMouseEnter(Sender: TObject);
-begin
-  (Sender as TPanel).Color := TColor($BDBEBF);
-end;
-
-procedure TForm1.CategoryPanelsMouseLeave(Sender: TObject);
-begin
-  (Sender as TPanel).Color := StringToColor('clBtnFace');
-end;
-
 procedure TForm1.CreateProductPanels(products: TList<TProduct>);
 var
-  i, panelWidth, panelHeight: Integer;
-  panel : TPanel;
-  imageProduct : TImage;
-  labelPrice, labelProvider, labelProductName : TLabel;
+  i: Integer;
+  panel : TProductPanel;
+  productName, picturePath : string;
+  price : Double;
 begin
-  panelWidth := 180;
-  panelHeight := 225;
   for i := 0 to (products.Count - 1) do
   begin
-    panel := TPanel.Create(Self);
-    imageProduct := TImage.Create(panel);
-    labelProductName := TLabel.Create(panel);
-    labelPrice := TLabel.Create(panel);
-    labelProvider := TLabel.Create(panel);
-    panel.Height := panelHeight;
-    imageProduct.Height := 140;
-    labelPrice.AutoSize := true;
-    labelProvider.AutoSize := true;
-    labelProductName.AutoSize := true;
-    panel.Width := panelWidth;
-    imageProduct.Width := 170;
-    labelProductName.Caption := products.Items[i].GetProductName;
-    labelProvider.Caption := 'Fornecido por: -----';
-    labelPrice.Caption := 'Preço: R$ ' + FloatToStr(products.Items[i].GetUnitPrice).Replace('.',',');
-    imageProduct.Picture.LoadFromFile(products.Items[i].GetProductPicture);
-    imageProduct.Left := 5;
-    imageProduct.Top := 5;
-    labelProductName.Top := 160;
-    labelPrice.Top := 180;
-    labelProvider.Top := 200;
-    labelProductName.Left := 8;
-    labelPrice.Left := 8;
-    labelProvider.Left := 8;
-    imageProduct.Stretch := true;
-    imageProduct.Parent := panel;
-    labelProductName.Font.Size := 10;
-    labelProductName.Parent := panel;
-    labelPrice.Parent := panel;
-    labelProvider.Parent := panel;
-    panel.Cursor := StringToCursor('crHandPoint');
-    panel.ParentColor := False;
-    panel.ParentBackground := false;
-
-    panel.OnMouseEnter := panelCardMouseEnter;
-    labelPrice.OnMouseEnter := panelCardMouseEnter;
-    labelProductName.OnMouseEnter := panelCardMouseEnter;
-    imageProduct.OnMouseEnter := panelCardMouseEnter;
-    labelProvider.OnMouseEnter := panelCardMouseEnter;
-
-    panel.OnMouseLeave := panelCardMouseLeave;
-    labelPrice.OnMouseLeave := panelCardMouseLeave;
-    labelProductName.OnMouseLeave := panelCardMouseLeave;
-    imageProduct.OnMouseLeave := panelCardMouseLeave;
-    labelProvider.OnMouseLeave := panelCardMouseLeave;
-
+    panel := TProductPanel.Create(Self);
+    productName := products[i].GetProductName;
+    picturePath := products[i].GetProductPicture;
+    price := products[i].GetUnitPrice;
+    panel.CreateAll(Self,picturePath,productName,price);
     createdProductPanels.Add(panel);
   end;
-  PositionProductPanels(panelWidth, panelHeight);
+  PositionProductPanels(panel.Width, panel.Height);
 end;
 
 procedure TForm1.FormDblClick(Sender: TObject);
@@ -225,7 +161,6 @@ begin
   if scrlbxProducts.Width = 0 then exit;
   lines := Ceil((panelWidth * createdProductPanels.Count) / scrlbxProducts.Width);
   alreadyPositioned := 0;
-  restToPosition := 0;
   for i := 0 to (lines - 1) do
   begin
     restToPosition := createdProductPanels.Count - alreadyPositioned;
@@ -264,54 +199,12 @@ end;
 end;
 
 procedure TForm1.panelCardMouseEnter(Sender: TObject);
-var parent : TWinControl;
 begin
-  parent := nil;
-  if (Sender is TPanel) then
-  begin
-    (Sender as TPanel).BevelOuter := TBevelCut.bvLowered;
-    (Sender as TPanel).Color := TColor($BDBEBF);
-  end;
-
-  if (Sender is TImage) then
-  begin
-    parent := (Sender as TImage).Parent;
-    (parent as TPanel).BevelOuter := TBevelCut.bvLowered;
-    (parent as TPanel).Color := TColor($BDBEBF);
-  end;
-
-  if (Sender is TLabel) then
-  begin
-    parent := (Sender as TLabel).Parent;
-    (parent as TPanel).BevelOuter := TBevelCut.bvLowered;
-    (parent as TPanel).Color := TColor($BDBEBF);
-  end;
   //panelCard.BevelOuter := TBevelCut.bvLowered;
 end;
 
 procedure TForm1.panelCardMouseLeave(Sender: TObject);
-var parent : TWinControl;
 begin
-    parent := nil;
-  if (Sender is TPanel) then
-  begin
-    (Sender as TPanel).BevelOuter := TBevelCut.bvRaised;
-    (Sender as TPanel).Color := StringToColor('clBtnFace');
-  end;
-
-  if (Sender is TImage) then
-  begin
-    parent := (Sender as TImage).Parent;
-    (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
-    (parent as TPanel).Color := StringToColor('clBtnFace');
-  end;
-
-  if (Sender is TLabel) then
-  begin
-    parent := (Sender as TLabel).Parent;
-    (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
-    (parent as TPanel).Color := StringToColor('clBtnFace');
-  end;
   //panelCard.BevelOuter := TBevelCut.bvRaised;
 end;
 
