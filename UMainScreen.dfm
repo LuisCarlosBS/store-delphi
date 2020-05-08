@@ -6,11 +6,14 @@ object Form1: TForm1
   HorzScrollBar.Range = 1241
   HorzScrollBar.Smooth = True
   HorzScrollBar.Tracking = True
+  HorzScrollBar.Visible = False
   VertScrollBar.Range = 554
   VertScrollBar.Smooth = True
   VertScrollBar.Tracking = True
   Caption = 'Loja - Tela Principal'
   Color = clBtnFace
+  Constraints.MinHeight = 350
+  Constraints.MinWidth = 890
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -19,6 +22,7 @@ object Form1: TForm1
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnResize = FormResize
   DesignSize = (
     1241
@@ -107,11 +111,12 @@ object Form1: TForm1
       000000000000000000000C4CCBE72AEEF280582A80ACBFFFD9}
     Stretch = True
   end
-  object label2: TLabel
+  object labelPesquisar: TLabel
     Left = 621
     Top = 23
     Width = 50
     Height = 13
+    Anchors = [akTop]
     Caption = 'Pesquisar:'
   end
   object labelLogin: TLabel
@@ -155,12 +160,14 @@ object Form1: TForm1
     BevelOuter = bvLowered
     TabOrder = 0
   end
-  object tEdit1: TEdit
-    Left = 677
+  object tEditSearch: TEdit
+    Left = 736
     Top = 20
-    Width = 265
+    Width = 210
     Height = 21
-    Anchors = [akLeft, akTop, akRight]
+    Anchors = [akTop]
+    AutoSize = False
+    Color = clBtnHighlight
     TabOrder = 1
   end
   object scrlbxCategories: TScrollBox

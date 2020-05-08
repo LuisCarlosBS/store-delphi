@@ -15,8 +15,8 @@ type
     labelProducts: TLabel;
     panelCard: TPanel;
     imageProfilePicture: TImage;
-    tEdit1: TEdit;
-    label2: TLabel;
+    tEditSearch: TEdit;
+    labelPesquisar: TLabel;
     imageProduct: TImage;
     labelPrice: TLabel;
     labelProvider: TLabel;
@@ -26,6 +26,7 @@ type
     scrlbxProducts: TScrollBox;
     labelPName: TLabel;
     procedure FormCreate(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure panelCardMouseEnter(Sender: TObject);
     procedure panelCardMouseLeave(Sender: TObject);
@@ -57,7 +58,6 @@ var categoryDAO : TCategoryDAO;
     productDAO  : TProductDAO;
     categories  : TList<TCategory>;
     products    : TList<TProduct>;
-  i: Integer;
 begin
   categoryDAO := TCategoryDAO.Create(self);
   productDAO := TProductDAO.Create(self);
@@ -71,10 +71,20 @@ begin
 end;
 
 procedure TForm1.FormResize(Sender: TObject);
-var i : integer;
 begin
   scrollBoxCategoryResponsive;
   PositionProductPanels(180,225);
+  if (Width >= 1275) then
+  begin
+    labelPesquisar.Anchors := [akTop, akLeft];
+    tEditSearch.Anchors := [akTop, akLeft];
+  end
+  else
+  begin
+    labelPesquisar.Anchors := [akTop];
+    tEditSearch.Anchors := [akTop];
+  end;
+
 end;
 
 procedure TForm1.loadCategoryPanels(categories: TList<TCategory>);
@@ -140,9 +150,29 @@ begin
     labelProductName.Parent := panel;
     labelPrice.Parent := panel;
     labelProvider.Parent := panel;
+    panel.Cursor := StringToCursor('crHandPoint');
+
+    panel.OnMouseEnter := panelCardMouseEnter;
+    labelPrice.OnMouseEnter := panelCardMouseEnter;
+    labelProductName.OnMouseEnter := panelCardMouseEnter;
+    imageProduct.OnMouseEnter := panelCardMouseEnter;
+    labelProvider.OnMouseEnter := panelCardMouseEnter;
+
+    panel.OnMouseLeave := panelCardMouseLeave;
+    labelPrice.OnMouseLeave := panelCardMouseLeave;
+    labelProductName.OnMouseLeave := panelCardMouseLeave;
+    imageProduct.OnMouseLeave := panelCardMouseLeave;
+    labelProvider.OnMouseLeave := panelCardMouseLeave;
+
     createdProductPanels.Add(panel);
   end;
   PositionProductPanels(panelWidth, panelHeight);
+end;
+
+procedure TForm1.FormDblClick(Sender: TObject);
+begin
+    ShowMessage(width.ToString + #13);
+    ShowMessage(height.ToString);
 end;
 
 procedure TForm1.panelCategoryClick(Sender : TObject);
@@ -169,6 +199,7 @@ end;
 procedure TForm1.PositionProductPanels(panelWidth : integer; panelHeight : integer);
 var i,j, lines, restToPosition, alreadyPositioned: Integer;
 begin
+  if scrlbxProducts.Width = 0 then exit;
   lines := Ceil((panelWidth * createdProductPanels.Count) / scrlbxProducts.Width);
   alreadyPositioned := 0;
   restToPosition := 0;
@@ -210,13 +241,49 @@ end;
 end;
 
 procedure TForm1.panelCardMouseEnter(Sender: TObject);
+var parent : TWinControl;
 begin
-  panelCard.BevelOuter := TBevelCut.bvLowered;
+  parent := nil;
+  if (Sender is TPanel) then
+  begin
+    (Sender as TPanel).BevelOuter := TBevelCut.bvLowered;
+  end;
+
+  if (Sender is TImage) then
+  begin
+    parent := (Sender as TImage).Parent;
+    (parent as TPanel).BevelOuter := TBevelCut.bvLowered;
+  end;
+
+  if (Sender is TLabel) then
+  begin
+    parent := (Sender as TLabel).Parent;
+    (parent as TPanel).BevelOuter := TBevelCut.bvLowered;
+  end;
+  //panelCard.BevelOuter := TBevelCut.bvLowered;
 end;
 
 procedure TForm1.panelCardMouseLeave(Sender: TObject);
+var parent : TWinControl;
 begin
-  panelCard.BevelOuter := TBevelCut.bvRaised;
+    parent := nil;
+  if (Sender is TPanel) then
+  begin
+    (Sender as TPanel).BevelOuter := TBevelCut.bvRaised;
+  end;
+
+  if (Sender is TImage) then
+  begin
+    parent := (Sender as TImage).Parent;
+    (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
+  end;
+
+  if (Sender is TLabel) then
+  begin
+    parent := (Sender as TLabel).Parent;
+    (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
+  end;
+  //panelCard.BevelOuter := TBevelCut.bvRaised;
 end;
 
 
