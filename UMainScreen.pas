@@ -32,9 +32,12 @@ type
     procedure panelCardMouseLeave(Sender: TObject);
     procedure panelCategoryClick(Sender : TObject);
 
+
   private
     procedure loadCategoryPanels(categories : TList<TCategory>);
     procedure scrollBoxCategoryResponsive;
+    procedure CategoryPanelsMouseEnter(Sender :TObject);
+    procedure CategoryPanelsMouseLeave(Sender :TObject);
     procedure CreateProductPanels(products : TList<TProduct>);
     procedure PositionProductPanels(panelWidth : integer; panelHeight : integer);
   public
@@ -45,6 +48,7 @@ var
   Form1 : TForm1;
   createdCategoryPanels : TList<TPanel>;
   createdProductPanels : TList<TPanel>;
+
 
 implementation
 
@@ -59,6 +63,9 @@ var categoryDAO : TCategoryDAO;
     categories  : TList<TCategory>;
     products    : TList<TProduct>;
 begin
+
+  scrlbxProducts.Color := TColor($E3E4E6);
+  scrlbxCategories.Color := TColor($E3E4E6);
   categoryDAO := TCategoryDAO.Create(self);
   productDAO := TProductDAO.Create(self);
   createdCategoryPanels := TList<TPanel>.Create;
@@ -105,8 +112,22 @@ begin
       panel.Caption := categories.Items[i].getName;
       panel.Visible := true;
       panel.Parent := scrlbxCategories;
+      panel.ParentColor := False;
+      panel.ParentBackground := false;
+      panel.OnMouseEnter := CategoryPanelsMouseEnter;
+      panel.OnMouseLeave := CategoryPanelsMouseLeave;
       createdCategoryPanels.Add(panel);
     end;
+end;
+
+procedure TForm1.CategoryPanelsMouseEnter(Sender: TObject);
+begin
+  (Sender as TPanel).Color := TColor($BDBEBF);
+end;
+
+procedure TForm1.CategoryPanelsMouseLeave(Sender: TObject);
+begin
+  (Sender as TPanel).Color := StringToColor('clBtnFace');
 end;
 
 procedure TForm1.CreateProductPanels(products: TList<TProduct>);
@@ -151,6 +172,8 @@ begin
     labelPrice.Parent := panel;
     labelProvider.Parent := panel;
     panel.Cursor := StringToCursor('crHandPoint');
+    panel.ParentColor := False;
+    panel.ParentBackground := false;
 
     panel.OnMouseEnter := panelCardMouseEnter;
     labelPrice.OnMouseEnter := panelCardMouseEnter;
@@ -247,18 +270,21 @@ begin
   if (Sender is TPanel) then
   begin
     (Sender as TPanel).BevelOuter := TBevelCut.bvLowered;
+    (Sender as TPanel).Color := TColor($BDBEBF);
   end;
 
   if (Sender is TImage) then
   begin
     parent := (Sender as TImage).Parent;
     (parent as TPanel).BevelOuter := TBevelCut.bvLowered;
+    (parent as TPanel).Color := TColor($BDBEBF);
   end;
 
   if (Sender is TLabel) then
   begin
     parent := (Sender as TLabel).Parent;
     (parent as TPanel).BevelOuter := TBevelCut.bvLowered;
+    (parent as TPanel).Color := TColor($BDBEBF);
   end;
   //panelCard.BevelOuter := TBevelCut.bvLowered;
 end;
@@ -270,18 +296,21 @@ begin
   if (Sender is TPanel) then
   begin
     (Sender as TPanel).BevelOuter := TBevelCut.bvRaised;
+    (Sender as TPanel).Color := StringToColor('clBtnFace');
   end;
 
   if (Sender is TImage) then
   begin
     parent := (Sender as TImage).Parent;
     (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
+    (parent as TPanel).Color := StringToColor('clBtnFace');
   end;
 
   if (Sender is TLabel) then
   begin
     parent := (Sender as TLabel).Parent;
     (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
+    (parent as TPanel).Color := StringToColor('clBtnFace');
   end;
   //panelCard.BevelOuter := TBevelCut.bvRaised;
 end;

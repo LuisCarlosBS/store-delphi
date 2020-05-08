@@ -11,7 +11,7 @@ object Form1: TForm1
   VertScrollBar.Smooth = True
   VertScrollBar.Tracking = True
   Caption = 'Loja - Tela Principal'
-  Color = clBtnFace
+  Color = clWhite
   Constraints.MinHeight = 350
   Constraints.MinWidth = 890
   Font.Charset = DEFAULT_CHARSET
@@ -178,6 +178,8 @@ object Form1: TForm1
     VertScrollBar.Smooth = True
     VertScrollBar.Tracking = True
     Anchors = [akLeft, akTop, akBottom]
+    Color = clBtnFace
+    ParentColor = False
     TabOrder = 2
   end
   object scrlbxProducts: TScrollBox
@@ -188,18 +190,21 @@ object Form1: TForm1
     HorzScrollBar.Tracking = True
     VertScrollBar.Tracking = True
     Anchors = [akLeft, akTop, akRight, akBottom]
+    Color = clBtnFace
     Padding.Left = 5
     Padding.Top = 5
     Padding.Right = 5
     Padding.Bottom = 5
+    ParentColor = False
     TabOrder = 3
     object panelCard: TPanel
-      Left = 8
-      Top = 8
+      Left = 5
+      Top = 5
       Width = 180
       Height = 225
       Align = alCustom
       BevelWidth = 2
+      ParentBackground = False
       TabOrder = 0
       Visible = False
       OnMouseEnter = panelCardMouseEnter
