@@ -15,6 +15,7 @@ type
     function getName : String;
     function getId : Integer;
     procedure setName(name : string);
+    procedure SetId(id : integer);
 
   end;
 
@@ -39,6 +40,11 @@ end;
 function TCategory.getName: String;
 begin
   Result := self.Name;
+end;
+
+procedure TCategory.SetId(id: integer);
+begin
+  Self.Id := id;
 end;
 
 procedure TCategory.setName(name : string);
