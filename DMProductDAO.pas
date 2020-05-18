@@ -12,14 +12,17 @@ uses
 
 type
   TProductDAO = class(TDataModule)
-    connection1: TFDConnection;
     queryLoadProducts: TFDQuery;
-    fdgxwtcrsr1: TFDGUIxWaitCursor;
-    fdphysfbdrvrlnk1: TFDPhysFBDriverLink;
+    query1: TFDQuery;
+    queryUpdateProductPicture: TFDQuery;
+    ds1: TDataSource;
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
   public
     function GetProducts : TList<TProduct>;
+    function GetPictures : TList<TProduct>;
+    procedure UpdatePictures(lista : TList<TProduct>);
   end;
 
 var
@@ -28,18 +31,42 @@ var
 
 implementation
 
+uses
+  DMConnection;
+
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
 {$R *.dfm}
 
+procedure TProductDAO.DataModuleCreate(Sender: TObject);
+begin
+  DMConnection.TConnection.Create(self);
+end;
+
 { TProductDAO }
+
+function TProductDAO.GetPictures: TList<TProduct>;
+var lista : TList<TProduct>;
+product : TProduct;
+begin
+  lista := TList<TProduct>.Create;
+  query1.Open;
+  while not query1.Eof do
+  begin
+    product := TProduct.Create;
+    product.SetID(query1.FieldByName('ID').AsInteger);
+    product.SetProductPicture(query1.FieldByName('ProductPicture').AsString);
+    lista.Add(product);
+    query1.Next;
+  end;
+  Result := lista;
+end;
 
 function TProductDAO.GetProducts: TList<TProduct>;
 var sql : string;
 product : TProduct;
   i: Integer;
 begin
-  sql := 'SELECT * FROM Products';
   products := TList<TProduct>.Create;
   queryLoadProducts.SQL.Add(sql);
   queryLoadProducts.Open;
@@ -57,6 +84,21 @@ begin
     queryLoadProducts.Next;
   end;
   Result := products;
+end;
+
+procedure TProductDAO.UpdatePictures(lista: TList<TProduct>);
+var sql : string;
+  path: TProduct;
+begin
+  sql := 'UPDATE Products SET ProductPicture = :pProductPicture WHERE ID = :pId';
+  for path in lista do
+  begin
+    queryUpdateProductPicture.SQL.Clear;
+    queryUpdateProductPicture.SQL.Add(sql);
+    queryUpdateProductPicture.ParamByName('pProductPicture').AsString := path.GetProductPicture;
+    queryUpdateProductPicture.ParamByName('pId').AsInteger := path.GetID;
+    queryUpdateProductPicture.ExecSQL;   
+  end;
 end;
 
 end.

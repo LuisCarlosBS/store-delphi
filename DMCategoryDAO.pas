@@ -12,10 +12,8 @@ uses
 
 type
   TCategoryDAO = class(TDataModule)
-    fdphysfbdrvrlnk1: TFDPhysFBDriverLink;
-    connection1: TFDConnection;
     query1: TFDQuery;
-    fdgxwtcrsr1: TFDGUIxWaitCursor;
+    procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -28,9 +26,17 @@ var
 
 implementation
 
+uses
+  DMConnection;
+
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
 {$R *.dfm}
+
+procedure TCategoryDAO.DataModuleCreate(Sender: TObject);
+begin
+  DMConnection.TConnection.Create(self);
+end;
 
 function TCategoryDAO.getCategorias: TList<TCategory>;
 var

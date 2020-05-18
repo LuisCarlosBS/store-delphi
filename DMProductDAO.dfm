@@ -1,35 +1,31 @@
 object ProductDAO: TProductDAO
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 459
   Width = 540
-  object connection1: TFDConnection
-    Params.Strings = (
-      
-        'Database=C:\Users\lucar\Documents\Embarcadero\Studio\Projects\Lo' +
-        'ja Delphi\Database\STOREDELPHI.FDB'
-      'User_Name=SYSDBA'
-      'Password=masterkey'
-      'CharacterSet=UTF8'
-      'DriverID=FB')
-    LoginPrompt = False
-    Left = 104
-    Top = 112
-  end
   object queryLoadProducts: TFDQuery
-    Connection = connection1
+    Active = True
+    Connection = Connection.connection1
+    SQL.Strings = (
+      'SELECT * FROM Products')
     Left = 248
     Top = 128
   end
-  object fdgxwtcrsr1: TFDGUIxWaitCursor
-    Provider = 'Forms'
-    Left = 96
-    Top = 248
+  object query1: TFDQuery
+    Connection = Connection.connection1
+    SQL.Strings = (
+      'SELECT ID,ProductPicture FROM Products')
+    Left = 352
+    Top = 144
   end
-  object fdphysfbdrvrlnk1: TFDPhysFBDriverLink
-    VendorLib = 
-      'C:\Users\lucar\Documents\Embarcadero\Studio\Projects\Loja Delphi' +
-      '\Database\fbclient.dll'
-    Left = 232
+  object queryUpdateProductPicture: TFDQuery
+    Connection = Connection.connection1
+    Left = 192
+    Top = 264
+  end
+  object ds1: TDataSource
+    DataSet = queryLoadProducts
+    Left = 320
     Top = 272
   end
 end
