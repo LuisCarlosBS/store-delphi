@@ -2,7 +2,7 @@ unit UProductPanel;
 
 interface
 
-uses Vcl.StdCtrls, Vcl.ExtCtrls, System.Classes, System.SysUtils, Vcl.Controls, Vcl.Graphics;
+uses Vcl.StdCtrls, Vcl.ExtCtrls, System.Classes, System.SysUtils, Vcl.Controls, Vcl.Graphics, UProduct;
 
 type
   TProductPanel = class(TPanel)
@@ -11,6 +11,7 @@ type
       LabelProductName : TLabel;
       LabelProductPrice : TLabel;
       LabelProductProvider : TLabel;
+      _IdCategory : integer;
       procedure ConfigPanel(parent : TWinControl);
       procedure ConfigProductImage;
       procedure ConfigProductName;
@@ -18,12 +19,13 @@ type
       procedure ConfigProductProvider;
       procedure ProductPanelMouseEnter(Sender : TObject);
       procedure ProductPanelMouseLeave(Sender : TObject);
+      procedure SetIdCategory(idCategory : Integer);
     public
       constructor Create(AOwner: TComponent); override;
-      procedure CreateAll(Parent: TWinControl; productImagePath : string;
-      productName : string; productPrice : Double);
+      procedure CreateAll(Parent: TWinControl; product : TProduct);
       function GetProductName : string;
       function GetProductPrice : Double;
+      property IdCategory : Integer read _IdCategory write SetIdCategory;
   end;
 
 implementation
@@ -90,16 +92,16 @@ begin
   inherited;
 end;
 
-procedure TProductPanel.CreateAll(Parent: TWinControl; productImagePath : string;
-      productName : string; productPrice : Double);
+procedure TProductPanel.CreateAll(Parent: TWinControl; product : TProduct);
 begin
   Self.ProductImage := TImage.Create(Self);
   Self.LabelProductName := TLabel.Create(Self);
   Self.LabelProductPrice := TLabel.Create(self);
   Self.LabelProductProvider := TLabel.Create(self);
-  Self.ProductImage.Picture.LoadFromFile(productImagePath);
-  Self.LabelProductName.Caption := productName;
-  Self.LabelProductPrice.Caption := FloatToStr(productPrice).Replace('.',',');
+  Self._IdCategory := product.GetIDCategory;
+  Self.ProductImage.Picture.LoadFromFile(product.GetProductPicture);
+  Self.LabelProductName.Caption := product.GetProductName;
+  Self.LabelProductPrice.Caption := 'R$ ' + FloatToStr(product.GetUnitPrice).Replace('.',',');
   Self.LabelProductProvider.Caption := 'Fornecido por: ----';
   ConfigPanel(Parent);
   ConfigProductImage;
@@ -164,6 +166,11 @@ begin
     (parent as TPanel).BevelOuter := TBevelCut.bvRaised;
     (parent as TPanel).Color := StringToColor('clBtnFace');
   end
+end;
+
+procedure TProductPanel.SetIdCategory(idCategory: Integer);
+begin
+  Self._IdCategory := idCategory;
 end;
 
 end.
