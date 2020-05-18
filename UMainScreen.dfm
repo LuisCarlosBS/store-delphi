@@ -169,6 +169,7 @@ object Form1: TForm1
     AutoSize = False
     Color = clBtnHighlight
     TabOrder = 1
+    OnChange = tEditSearchChange
   end
   object scrlbxCategories: TScrollBox
     Left = 4
@@ -183,7 +184,7 @@ object Form1: TForm1
     TabOrder = 2
   end
   object scrlbxProducts: TScrollBox
-    Left = 280
+    Left = 279
     Top = 60
     Width = 954
     Height = 486

@@ -6,7 +6,9 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.Math, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, Vcl.Imaging.jpeg, JvScrollBox,
-  Vcl.ComCtrls, System.Generics.Collections, UCategory, UProduct, UCategoryPanel, UProductPanel;
+  Vcl.ComCtrls, System.Generics.Collections, UCategory, UProduct, UCategoryPanel, UProductPanel,
+  JvExExtCtrls, JvExtComponent, JvItemsPanel, DMProductDAO, Vcl.DBCGrids,
+  Vcl.Mask, Vcl.DBCtrls;
 
 type
   TForm1 = class(TForm)
@@ -31,53 +33,93 @@ type
     procedure panelCardMouseEnter(Sender: TObject);
     procedure panelCardMouseLeave(Sender: TObject);
     procedure panelCategoryClick(Sender : TObject);
+    procedure tEditSearchChange(Sender: TObject);
 
 
   private
     procedure loadCategoryPanels(categories : TList<TCategory>);
     procedure scrollBoxCategoryResponsive;
-    procedure CreateProductPanels(products : TList<TProduct>);
-    procedure PositionProductPanels(panelWidth : integer; panelHeight : integer);
+    procedure CreateProductPanels(productsList : TList<TProduct>);
+    procedure PositionProductPanels(panelWidth : integer; panelHeight : integer; listToPosition : TList<TProductPanel>);
+    procedure FilterProducts;
+    procedure ValidatePicturesPath(pathList : TList<TProduct>; dao : TProductDAO);
   public
     { Public declarations }
   end;
 
 var
   Form1 : TForm1;
-  createdCategoryPanels : TList<TPanel>;
-  createdProductPanels : TList<TPanel>;
+  createdCategoryPanels : TList<TCategoryPanel>;
+  createdProductPanels : TList<TProductPanel>;
+  backupProductPanels : TList<TProductPanel>;
 
+  products    : TList<TProduct>;
 
 implementation
 
 uses
- DMCategoryDAO, DMProductDAO;
+ DMCategoryDAO;
 
 {$R *.dfm}
+
+procedure TForm1.FilterProducts;
+var  filteredProducts : TList<TProduct>;
+elem : TProduct;
+  panel: TProductPanel;
+  text,name : string;
+begin
+  if tEditSearch.GetTextLen = 0 then
+  begin
+    CreateProductPanels(products);
+    exit;
+  end;
+  try
+    filteredProducts := TList<TProduct>.Create;
+    for elem in products do
+    begin
+      text := tEditSearch.Text;
+      name := elem.GetProductName;
+      if Trim(name.ToUpper).Contains(Trim(text.ToUpper)) then
+      begin
+        filteredProducts.Add(elem);
+      end;
+    end;
+    CreateProductPanels(filteredProducts);
+  finally
+    filteredProducts.Clear;
+    filteredProducts.Free;
+  end;
+end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var categoryDAO : TCategoryDAO;
     productDAO  : TProductDAO;
     categories  : TList<TCategory>;
-    products    : TList<TProduct>;
+
 begin
-  scrlbxProducts.Color := TColor($E3E4E6);
-  scrlbxCategories.Color := TColor($E3E4E6);
-  categoryDAO := TCategoryDAO.Create(self);
-  productDAO := TProductDAO.Create(self);
-  createdCategoryPanels := TList<TPanel>.Create;
-  createdProductPanels := TList<TPanel>.Create;
-  categories := categoryDAO.getCategorias;
-  loadCategoryPanels(categories);
-  products := productDAO.GetProducts;
-  CreateProductPanels(products);
-  categoryDAO.Free;
+  try
+    categoryDAO := TCategoryDAO.Create(self);
+    productDAO := TProductDAO.Create(self);
+    products := TList<TProduct>.Create;
+    createdProductPanels := TList<TProductPanel>.Create;
+    createdCategoryPanels := TList<TCategoryPanel>.Create;
+    ValidatePicturesPath(productDAO.GetPictures, productDAO);
+    scrlbxProducts.Color := TColor($E3E4E6);
+    scrlbxCategories.Color := TColor($E3E4E6);
+    categories := categoryDAO.getCategorias;
+    loadCategoryPanels(categories);
+    products := productDAO.GetProducts;
+    CreateProductPanels(products);
+  finally
+    categoryDAO.Free;
+    productDAO.Free;
+  end;
+
 end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
   scrollBoxCategoryResponsive;
-  PositionProductPanels(180,225);
   if (Width >= 1275) then
   begin
     labelPesquisar.Anchors := [akTop, akLeft];
@@ -88,7 +130,7 @@ begin
     labelPesquisar.Anchors := [akTop];
     tEditSearch.Anchors := [akTop];
   end;
-
+  PositionProductPanels(180,225,createdProductPanels);
 end;
 
 procedure TForm1.loadCategoryPanels(categories: TList<TCategory>);
@@ -109,23 +151,32 @@ begin
     end;
 end;
 
-procedure TForm1.CreateProductPanels(products: TList<TProduct>);
+procedure TForm1.CreateProductPanels(productsList: TList<TProduct>);
 var
   i: Integer;
-  panel : TProductPanel;
+  panel,count: TProductPanel;
   productName, picturePath : string;
   price : Double;
 begin
-  for i := 0 to (products.Count - 1) do
+  if createdProductPanels.Count > 0 then
+  begin
+    for count in createdProductPanels do
+    begin
+      count.Free;  
+    end;
+    createdProductPanels.Clear;
+  end;
+
+  for i := 0 to Pred(productsList.Count) do
   begin
     panel := TProductPanel.Create(Self);
-    productName := products[i].GetProductName;
-    picturePath := products[i].GetProductPicture;
-    price := products[i].GetUnitPrice;
-    panel.CreateAll(Self,picturePath,productName,price);
+    productName := productsList[i].GetProductName;
+    picturePath := productsList[i].GetProductPicture;
+    price := productsList[i].GetUnitPrice;
+    panel.CreateAll(scrlbxProducts,picturePath,productName,price);
     createdProductPanels.Add(panel);
   end;
-  PositionProductPanels(panel.Width, panel.Height);
+  PositionProductPanels(panel.Width, panel.Height, createdProductPanels);
 end;
 
 procedure TForm1.FormDblClick(Sender: TObject);
@@ -155,24 +206,24 @@ begin
   end;
 end;
 
-procedure TForm1.PositionProductPanels(panelWidth : integer; panelHeight : integer);
+procedure TForm1.PositionProductPanels(panelWidth : integer; panelHeight : integer;
+ listToPosition : TList<TProductPanel>);
 var i,j, lines, restToPosition, alreadyPositioned: Integer;
 begin
   if scrlbxProducts.Width = 0 then exit;
-  lines := Ceil((panelWidth * createdProductPanels.Count) / scrlbxProducts.Width);
+  lines := Ceil((panelWidth * listToPosition.Count) / scrlbxProducts.Width);
   alreadyPositioned := 0;
-  for i := 0 to (lines - 1) do
+  for i := 0 to Pred(lines) do
   begin
-    restToPosition := createdProductPanels.Count - alreadyPositioned;
-    for j := 0 to restToPosition - 1  do
+    restToPosition := listToPosition.Count - alreadyPositioned;
+    for j := 0 to Pred(restToPosition)  do
     begin
       if (((panelWidth * j) + panelWidth + 40) > scrlbxProducts.Width) then
       begin
       break;
       end;
-      createdProductPanels.Items[alreadyPositioned].Top := ((panelHeight + 5) * i) + 5;
-      createdProductPanels.Items[alreadyPositioned].Left := ((panelWidth + 5) * j) + 5;
-      createdProductPanels.Items[alreadyPositioned].Parent := scrlbxProducts;
+      listToPosition.Items[alreadyPositioned].Top := ((panelHeight + 5) * i) + 5;
+      listToPosition.Items[alreadyPositioned].Left := ((panelWidth + 5) * j) + 5;
       alreadyPositioned := alreadyPositioned + 1;
     end;
   end;
@@ -208,5 +259,34 @@ begin
   //panelCard.BevelOuter := TBevelCut.bvRaised;
 end;
 
+procedure TForm1.tEditSearchChange(Sender: TObject);
+begin
+  FilterProducts;
+end;
+
+
+procedure TForm1.ValidatePicturesPath(pathList: TList<TProduct>; dao : TProductDAO);
+var
+  appPath, newPath: string;
+  doesNotExists : TList<TProduct>;
+  element: TProduct;
+begin
+  doesNotExists := TList<TProduct>.Create;
+  for element in pathList do
+  begin
+    if not FileExists(element.GetProductPicture) then
+    begin  
+      doesNotExists.Add(element);
+    end;
+  end;
+  if doesNotExists.Count = 0 then exit;
+  appPath := ExtractFilePath(ParamStr(0));
+  newPath := appPath + 'Pictures\';
+  for element in doesNotExists do
+  begin
+    element.SetProductPicture(newPath + ExtractFileName(element.GetProductPicture));
+  end;
+  dao.UpdatePictures(doesNotExists);
+end;
 
 end.
