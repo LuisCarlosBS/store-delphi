@@ -7,11 +7,14 @@ uses Vcl.ExtCtrls, System.Classes, UCategory, System.Generics.Collections, Vcl.G
 type
   TCategoryPanel = class(TPanel)
     private
+      _Id : integer;
       procedure CategoryPanelOnMouseEnter(Sender : TObject);
       procedure CategoryPanelOnMouseLeave(Sender : TObject);
       procedure ConfigPanel;
+      procedure SetId(id : integer);
     public
       constructor Create(AOwner: TComponent); override;
+      property ID : integer read _Id write SetId;
   end;
 
 implementation
@@ -43,6 +46,11 @@ begin
   Self.OnMouseEnter := CategoryPanelOnMouseEnter;
   Self.OnMouseLeave := CategoryPanelOnMouseLeave;
   ConfigPanel;
+end;
+
+procedure TCategoryPanel.SetId(id: integer);
+begin
+  self._Id := id;
 end;
 
 end.
