@@ -10,7 +10,8 @@ uses
   DMCategoryDAO in 'DMCategoryDAO.pas' {CategoryDAO: TDataModule},
   DMProductDAO in 'DMProductDAO.pas' {ProductDAO: TDataModule},
   UCategoryPanel in 'UCategoryPanel.pas',
-  UProductPanel in 'UProductPanel.pas';
+  UProductPanel in 'UProductPanel.pas',
+  DMConnection in 'DMConnection.pas' {Connection: TDataModule};
 
 {$R *.res}
 
