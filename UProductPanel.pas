@@ -22,6 +22,8 @@ type
       constructor Create(AOwner: TComponent); override;
       procedure CreateAll(Parent: TWinControl; productImagePath : string;
       productName : string; productPrice : Double);
+      function GetProductName : string;
+      function GetProductPrice : Double;
   end;
 
 implementation
@@ -104,6 +106,16 @@ begin
   ConfigProductName;
   ConfigProductPrice;
   ConfigProductProvider;
+end;
+
+function TProductPanel.GetProductName: string;
+begin
+  Result := Self.LabelProductName.Caption;
+end;
+
+function TProductPanel.GetProductPrice: Double;
+begin
+  Result := StrToFloat(Self.LabelProductPrice.Caption);
 end;
 
 procedure TProductPanel.ProductPanelMouseEnter(Sender: TObject);
