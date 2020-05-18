@@ -42,6 +42,7 @@ type
     procedure CreateProductPanels(productsList : TList<TProduct>);
     procedure PositionProductPanels(panelWidth : integer; panelHeight : integer; listToPosition : TList<TProductPanel>);
     procedure FilterProducts;
+    procedure FilterProductsByCategory(panelCategory : TCategoryPanel);
     procedure ValidatePicturesPath(pathList : TList<TProduct>; dao : TProductDAO);
   public
     { Public declarations }
@@ -51,9 +52,8 @@ var
   Form1 : TForm1;
   createdCategoryPanels : TList<TCategoryPanel>;
   createdProductPanels : TList<TProductPanel>;
-  backupProductPanels : TList<TProductPanel>;
-
-  products    : TList<TProduct>;
+  products : TList<TProduct>;
+  categories : TList<TCategory>;
 
 implementation
 
@@ -91,11 +91,36 @@ begin
   end;
 end;
 
+procedure TForm1.FilterProductsByCategory(panelCategory : TCategoryPanel);
+var filteredProducts : TList<TProduct>;
+idCategory : integer;
+  elem: TProduct;
+begin
+  if panelCategory = nil then
+  begin
+    CreateProductPanels(products); 
+    exit;
+  end;
+  filteredProducts := TList<TProduct>.Create;
+  idCategory := panelCategory.ID;
+  try
+    for elem in products do
+    begin
+      if elem.GetIDCategory = idCategory then
+      begin  
+        filteredProducts.Add(elem);
+      end;
+    end;
+    CreateProductPanels(filteredProducts);
+  finally
+    filteredProducts.Clear;
+    filteredProducts.Free;
+  end;
+end;
+
 procedure TForm1.FormCreate(Sender: TObject);
 var categoryDAO : TCategoryDAO;
     productDAO  : TProductDAO;
-    categories  : TList<TCategory>;
-
 begin
   try
     categoryDAO := TCategoryDAO.Create(self);
@@ -137,7 +162,7 @@ procedure TForm1.loadCategoryPanels(categories: TList<TCategory>);
 var i: Integer;
 panel : TCategoryPanel;
 begin
-  for i := 0 to (categories.Count - 1) do
+  for i := 0 to Pred(categories.Count) do
     begin
       panel := TCategoryPanel.Create(self);
       panel.OnClick := panelCategoryClick;
@@ -146,6 +171,7 @@ begin
       if i = 0 then panel.Top := 5;
       panel.Left := 5;
       panel.Caption := categories.Items[i].getName;
+      panel.ID := categories.Items[i].getId;
       panel.Parent := scrlbxCategories;
       createdCategoryPanels.Add(panel);
     end;
@@ -154,15 +180,13 @@ end;
 procedure TForm1.CreateProductPanels(productsList: TList<TProduct>);
 var
   i: Integer;
-  panel,count: TProductPanel;
-  productName, picturePath : string;
-  price : Double;
+  panel: TProductPanel;
 begin
   if createdProductPanels.Count > 0 then
   begin
-    for count in createdProductPanels do
+    for panel in createdProductPanels do
     begin
-      count.Free;  
+      panel.Free;  
     end;
     createdProductPanels.Clear;
   end;
@@ -170,10 +194,7 @@ begin
   for i := 0 to Pred(productsList.Count) do
   begin
     panel := TProductPanel.Create(Self);
-    productName := productsList[i].GetProductName;
-    picturePath := productsList[i].GetProductPicture;
-    price := productsList[i].GetUnitPrice;
-    panel.CreateAll(scrlbxProducts,picturePath,productName,price);
+    panel.CreateAll(scrlbxProducts,productsList.Items[i]);
     createdProductPanels.Add(panel);
   end;
   PositionProductPanels(panel.Width, panel.Height, createdProductPanels);
@@ -187,16 +208,15 @@ end;
 
 procedure TForm1.panelCategoryClick(Sender : TObject);
 var i: Integer;
-panelSelected : TPanel;
+panelSelected : TCategoryPanel;
 begin
-  panelSelected := nil;
   if (Sender as TPanel).BevelOuter = TBevelCut.bvRaised then
   begin
-    for i := 0 to (createdCategoryPanels.Count - 1) do
+    for i := 0 to Pred(createdCategoryPanels.Count) do
     begin
       createdCategoryPanels[i].BevelOuter := TBevelCut.bvRaised;
     end;
-    panelSelected := (Sender as TPanel);
+    panelSelected := (Sender as TCategoryPanel);
     (Sender as TPanel).BevelOuter := TBevelCut.bvLowered;
   end
   else
@@ -204,6 +224,7 @@ begin
     panelSelected := nil;
     (Sender as TPanel).BevelOuter := TBevelCut.bvRaised;
   end;
+  FilterProductsByCategory(panelSelected);
 end;
 
 procedure TForm1.PositionProductPanels(panelWidth : integer; panelHeight : integer;
