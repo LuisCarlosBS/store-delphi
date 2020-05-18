@@ -12,7 +12,7 @@ uses
 
 type
   TCategoryDAO = class(TDataModule)
-    query1: TFDQuery;
+    queryAllCategories: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -41,19 +41,20 @@ end;
 function TCategoryDAO.getCategorias: TList<TCategory>;
 var
   name : string;
-  i: Integer;
+  i, id: Integer;
   category : TCategory;
 begin
   lista := TList<TCategory>.Create;
-  query1.SQL.Add('SELECT * FROM Categories');
-  query1.Open;
-  while not query1.Eof do
+  queryAllCategories.Open;
+  while not queryAllCategories.Eof do
   begin
     category := TCategory.Create;
-    name := query1.FieldByName('CategoryName').AsString;
+    name := queryAllCategories.FieldByName('CategoryName').AsString;
+    id := queryAllCategories.FieldByName('ID').AsInteger;
     category.setName(name);
+    category.SetId(id);
     lista.Add(category);
-    query1.Next;
+    queryAllCategories.Next;
   end;
 
   Result := lista;

@@ -3,8 +3,10 @@ object CategoryDAO: TCategoryDAO
   OnCreate = DataModuleCreate
   Height = 463
   Width = 673
-  object query1: TFDQuery
+  object queryAllCategories: TFDQuery
     Connection = Connection.connection1
+    SQL.Strings = (
+      'SELECT * FROM Categories')
     Left = 376
     Top = 200
   end
