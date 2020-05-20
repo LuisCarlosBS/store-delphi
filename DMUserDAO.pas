@@ -10,7 +10,6 @@ uses
 
 type
   TUserDAO = class(TDataModule)
-    queryValidateLoginByUsername: TFDQuery;
     queryValidateLoginByEmail: TFDQuery;
     queryFindByEmail: TFDQuery;
     queryFindByUsername: TFDQuery;
@@ -21,11 +20,11 @@ type
     { Private declarations }
   public
     { Public declarations }
-    function ValidateLoginByUsername(user: TUser): Boolean;
     function ValidateLoginByEmail(user: TUser): Boolean;
-    function FindByEmail(email : string): Boolean;
+    function IsEmailExists(email : string): Boolean;
     function FindByUsername(username : string): Boolean;
     function InsertUser(user : TUser) : Integer;
+    function FindByEmail(user : TUser) : TUser;
     procedure UpdateProfilePicture(user : TUser);
   end;
 
@@ -46,18 +45,35 @@ begin
   DMConnection.TConnection.Create(self);
 end;
 
-function TUserDAO.FindByEmail(email: string): Boolean;
-var
-  res: Boolean;
+function TUserDAO.IsEmailExists(email: string): Boolean;
 begin
-  res := False;
   with queryFindByEmail do
   begin
     ParamByName('pEmail').AsString := email;
     Open;
-    if RowsAffected > 0 then res := true;
+    Result := RowsAffected > 0;
   end;
-  Result := res;
+end;
+
+function TUserDAO.FindByEmail(user: TUser): TUser;
+var newUser : TUser;
+begin
+  newUser := TUser.Create;
+  with queryFindByEmail do
+  begin
+    ParamByName('pEmail').AsString := user.Email;
+    Open;
+    while not Eof do
+    begin
+      newUser.Id := FieldByName('ID').AsInteger;
+      newUser.DisplayName := FieldByName('DisplayName').AsString;
+      newUser.Email := FieldByName('Email').AsString;
+      newUser.ProfilePicture := FieldByName('ProfilePicture').AsString;
+      newUser.Employee := FieldByName('Employee').AsBoolean;
+      Next;
+    end;
+  end;
+  Result := newUser;
 end;
 
 function TUserDAO.FindByUsername(username: string): Boolean;
@@ -100,33 +116,14 @@ begin
 end;
 
 function TUserDAO.ValidateLoginByEmail(user: TUser): Boolean;
-var
-  res: Boolean;
 begin
-  res := false;
   with queryValidateLoginByEmail do
   begin
     ParamByName('pEmail').AsString := user.Email;
     ParamByName('pPassword').AsString := user.Password;
     Open;
-    if RowsAffected > 0 then res := true;
+      Result := RowsAffected > 0;
   end;
-  Result := res;
-end;
-
-function TUserDAO.ValidateLoginByUsername(user: TUser): Boolean;
-var
-  res: Boolean;
-begin
-  res := false;
-  with queryValidateLoginByUsername do
-  begin
-    ParamByName('pUsername').AsString := user.Username;
-    ParamByName('pPassword').AsString := user.Password;
-    Open;
-    if RowsAffected > 0 then res := true;
-  end;
-  Result := res;
 end;
 
 end.

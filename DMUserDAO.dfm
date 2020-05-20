@@ -3,30 +3,13 @@ object UserDAO: TUserDAO
   OnCreate = DataModuleCreate
   Height = 308
   Width = 435
-  object queryValidateLoginByUsername: TFDQuery
-    Connection = Connection.connection1
-    SQL.Strings = (
-      'SELECT ID FROM Users WHERE Username = :pUsername '
-      'AND Password = :pPassword')
-    Left = 152
-    Top = 40
-    ParamData = <
-      item
-        Name = 'PUSERNAME'
-        ParamType = ptInput
-        Value = Null
-      end
-      item
-        Name = 'PPASSWORD'
-        ParamType = ptInput
-      end>
-  end
   object queryValidateLoginByEmail: TFDQuery
+    Connection = Connection.connection1
     SQL.Strings = (
       'SELECT ID FROM Users WHERE Email = :pEmail'
       'AND Password = :pPassword')
     Left = 144
-    Top = 120
+    Top = 48
     ParamData = <
       item
         Name = 'PEMAIL'
@@ -40,7 +23,8 @@ object UserDAO: TUserDAO
   object queryFindByEmail: TFDQuery
     Connection = Connection.connection1
     SQL.Strings = (
-      'SELECT ID FROM Users WHERE Email = :pEmail')
+      'SELECT ID, DisplayName, Email, ProfilePicture, Employee '
+      'FROM Users WHERE Email = :pEmail')
     Left = 296
     Top = 32
     ParamData = <
@@ -72,7 +56,7 @@ object UserDAO: TUserDAO
         'e)'
       'RETURNING ID;')
     Left = 144
-    Top = 192
+    Top = 128
     ParamData = <
       item
         Name = 'PUSERNAME'
@@ -100,8 +84,8 @@ object UserDAO: TUserDAO
     SQL.Strings = (
       'UPDATE Users SET ProfilePicture = :pProfilePicture'
       'WHERE ID = :pId;')
-    Left = 272
-    Top = 200
+    Left = 152
+    Top = 192
     ParamData = <
       item
         Name = 'PPROFILEPICTURE'
