@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, Vcl.Imaging.jpeg, JvScrollBox,
   Vcl.ComCtrls, System.Generics.Collections, UCategory, UProduct, UCategoryPanel, UProductPanel,
-  JvExExtCtrls, JvExtComponent, JvItemsPanel, DMProductDAO, Vcl.DBCGrids,
+  JvExExtCtrls, JvExtComponent, JvItemsPanel, DMProductDAO, Vcl.DBCGrids, UUser,
   Vcl.Mask, Vcl.DBCtrls;
 
 type
@@ -35,9 +35,8 @@ type
     procedure panelCardMouseLeave(Sender: TObject);
     procedure panelCategoryClick(Sender : TObject);
     procedure tEditSearchChange(Sender: TObject);
-
-
   private
+    FUser : TUser;
     procedure loadCategoryPanels(categories : TList<TCategory>);
     procedure scrollBoxCategoryResponsive;
     procedure CreateProductPanels(productsList : TList<TProduct>);
@@ -45,8 +44,13 @@ type
     procedure FilterProducts;
     procedure FilterProductsByCategory(panelCategory : TCategoryPanel);
     procedure ValidatePicturesPath(pathList : TList<TProduct>; dao : TProductDAO);
+    procedure SetUser(user : TUser);
+    procedure BackToDefaultUser;
+    function IsLogged : Boolean;
   public
     { Public declarations }
+    property User : TUser read FUser write SetUser;
+    procedure ConfigUser(user : TUser);
   end;
 
 var
@@ -124,6 +128,8 @@ var categoryDAO : TCategoryDAO;
     productDAO  : TProductDAO;
 begin
   try
+    BackToDefaultUser;
+    FUser := nil;
     categoryDAO := TCategoryDAO.Create(self);
     productDAO := TProductDAO.Create(self);
     products := TList<TProduct>.Create;
@@ -159,6 +165,11 @@ begin
   PositionProductPanels(180,225,createdProductPanels);
 end;
 
+function TMainScreen.IsLogged: Boolean;
+begin
+  Result := FUser = nil;
+end;
+
 procedure TMainScreen.loadCategoryPanels(categories: TList<TCategory>);
 var i: Integer;
 panel : TCategoryPanel;
@@ -176,6 +187,27 @@ begin
       panel.Parent := scrlbxCategories;
       createdCategoryPanels.Add(panel);
     end;
+end;
+
+procedure TMainScreen.BackToDefaultUser;
+var
+defaultUserPicture : string;
+begin
+  defaultUserPicture := ExtractFileDir(ParamStr(0)) + '\Pictures\Users\generic_profile_picture.jpg';
+  labelLogin.Caption :=  'Entrar / Cadastrar';
+  labelConnectionStatus.Caption := 'Desconectado';
+  labelConnectionStatus.Font.Color := StringToColor('clRed');
+  imageProfilePicture.Picture.LoadFromFile(defaultUserPicture);
+
+end;
+
+procedure TMainScreen.ConfigUser(user : TUser);
+begin
+  FUser := user;
+  labelConnectionStatus.Caption := 'Olá, ' + FUser.DisplayName;
+  labelConnectionStatus.Font.Color := StringToColor('clGreen');
+  imageProfilePicture.Picture.LoadFromFile(FUser.ProfilePicture);
+  labelLogin.Caption := 'Sair';
 end;
 
 procedure TMainScreen.CreateProductPanels(productsList: TList<TProduct>);
@@ -211,6 +243,12 @@ procedure TMainScreen.labelLoginClick(Sender: TObject);
 var loginScreen : TLoginScreen;
 begin
   loginScreen := TLoginScreen.Create(Self);
+  if not IsLogged then
+  begin
+    BackToDefaultUser;
+    FUser := nil;
+    Exit;
+  end;
   try
   loginScreen.ShowModal;
   finally
@@ -280,6 +318,11 @@ begin
       createdCategoryPanels[i].Width := 240;
     end;
 end;
+end;
+
+procedure TMainScreen.SetUser(user: TUser);
+begin
+  Self.FUser := user;
 end;
 
 procedure TMainScreen.panelCardMouseEnter(Sender: TObject);
