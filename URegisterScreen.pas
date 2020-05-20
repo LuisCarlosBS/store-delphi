@@ -138,7 +138,7 @@ var dao : TUserDAO;
 begin
   dao := TUserDAO.Create(Self);
   try
-    Result := dao.FindByEmail(email);
+    Result := dao.IsEmailExists(email);
   finally
     dao.Free;
   end;
