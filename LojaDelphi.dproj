@@ -129,7 +129,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="UMainScreen.pas">
-            <Form>Form1</Form>
+            <Form>MainScreen</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UCategory.pas"/>
@@ -151,6 +151,21 @@
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
+        <DCCReference Include="ULoginScreen.pas">
+            <Form>LoginScreen</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="URegisterScreen.pas">
+            <Form>RegisterScreen</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UUser.pas"/>
+        <DCCReference Include="DMUserDAO.pas">
+            <Form>UserDAO</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="UUtils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
