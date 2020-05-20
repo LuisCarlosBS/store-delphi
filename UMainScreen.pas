@@ -11,7 +11,7 @@ uses
   Vcl.Mask, Vcl.DBCtrls;
 
 type
-  TForm1 = class(TForm)
+  TMainScreen = class(TForm)
     panelseparator: TPanel;
     labelCategory: TLabel;
     labelProducts: TLabel;
@@ -30,6 +30,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure labelLoginClick(Sender: TObject);
     procedure panelCardMouseEnter(Sender: TObject);
     procedure panelCardMouseLeave(Sender: TObject);
     procedure panelCategoryClick(Sender : TObject);
@@ -49,7 +50,7 @@ type
   end;
 
 var
-  Form1 : TForm1;
+  MainScreen : TMainScreen;
   createdCategoryPanels : TList<TCategoryPanel>;
   createdProductPanels : TList<TProductPanel>;
   products : TList<TProduct>;
@@ -58,11 +59,11 @@ var
 implementation
 
 uses
- DMCategoryDAO;
+ DMCategoryDAO, ULoginScreen;
 
 {$R *.dfm}
 
-procedure TForm1.FilterProducts;
+procedure TMainScreen.FilterProducts;
 var  filteredProducts : TList<TProduct>;
 elem : TProduct;
   panel: TProductPanel;
@@ -77,9 +78,9 @@ begin
     filteredProducts := TList<TProduct>.Create;
     for elem in products do
     begin
-      text := tEditSearch.Text;
-      name := elem.GetProductName;
-      if Trim(name.ToUpper).Contains(Trim(text.ToUpper)) then
+      text := Trim(tEditSearch.Text);
+      name := Trim(elem.GetProductName);
+      if name.ToUpper.Contains(text.ToUpper) then
       begin
         filteredProducts.Add(elem);
       end;
@@ -91,7 +92,7 @@ begin
   end;
 end;
 
-procedure TForm1.FilterProductsByCategory(panelCategory : TCategoryPanel);
+procedure TMainScreen.FilterProductsByCategory(panelCategory : TCategoryPanel);
 var filteredProducts : TList<TProduct>;
 idCategory : integer;
   elem: TProduct;
@@ -118,7 +119,7 @@ begin
   end;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TMainScreen.FormCreate(Sender: TObject);
 var categoryDAO : TCategoryDAO;
     productDAO  : TProductDAO;
 begin
@@ -142,7 +143,7 @@ begin
 
 end;
 
-procedure TForm1.FormResize(Sender: TObject);
+procedure TMainScreen.FormResize(Sender: TObject);
 begin
   scrollBoxCategoryResponsive;
   if (Width >= 1275) then
@@ -158,7 +159,7 @@ begin
   PositionProductPanels(180,225,createdProductPanels);
 end;
 
-procedure TForm1.loadCategoryPanels(categories: TList<TCategory>);
+procedure TMainScreen.loadCategoryPanels(categories: TList<TCategory>);
 var i: Integer;
 panel : TCategoryPanel;
 begin
@@ -177,7 +178,7 @@ begin
     end;
 end;
 
-procedure TForm1.CreateProductPanels(productsList: TList<TProduct>);
+procedure TMainScreen.CreateProductPanels(productsList: TList<TProduct>);
 var
   i: Integer;
   panel: TProductPanel;
@@ -200,13 +201,24 @@ begin
   PositionProductPanels(panel.Width, panel.Height, createdProductPanels);
 end;
 
-procedure TForm1.FormDblClick(Sender: TObject);
+procedure TMainScreen.FormDblClick(Sender: TObject);
 begin
     ShowMessage(width.ToString + #13);
     ShowMessage(height.ToString);
 end;
 
-procedure TForm1.panelCategoryClick(Sender : TObject);
+procedure TMainScreen.labelLoginClick(Sender: TObject);
+var loginScreen : TLoginScreen;
+begin
+  loginScreen := TLoginScreen.Create(Self);
+  try
+  loginScreen.ShowModal;
+  finally
+    loginScreen.Free;
+  end;
+end;
+
+procedure TMainScreen.panelCategoryClick(Sender : TObject);
 var i: Integer;
 panelSelected : TCategoryPanel;
 begin
@@ -227,7 +239,7 @@ begin
   FilterProductsByCategory(panelSelected);
 end;
 
-procedure TForm1.PositionProductPanels(panelWidth : integer; panelHeight : integer;
+procedure TMainScreen.PositionProductPanels(panelWidth : integer; panelHeight : integer;
  listToPosition : TList<TProductPanel>);
 var i,j, lines, restToPosition, alreadyPositioned: Integer;
 begin
@@ -251,7 +263,7 @@ begin
 
 end;
 
-procedure TForm1.scrollBoxCategoryResponsive;
+procedure TMainScreen.scrollBoxCategoryResponsive;
 var i : integer;
 begin
 if scrlbxCategories.VertScrollBar.IsScrollBarVisible then
@@ -270,23 +282,23 @@ begin
 end;
 end;
 
-procedure TForm1.panelCardMouseEnter(Sender: TObject);
+procedure TMainScreen.panelCardMouseEnter(Sender: TObject);
 begin
   //panelCard.BevelOuter := TBevelCut.bvLowered;
 end;
 
-procedure TForm1.panelCardMouseLeave(Sender: TObject);
+procedure TMainScreen.panelCardMouseLeave(Sender: TObject);
 begin
   //panelCard.BevelOuter := TBevelCut.bvRaised;
 end;
 
-procedure TForm1.tEditSearchChange(Sender: TObject);
+procedure TMainScreen.tEditSearchChange(Sender: TObject);
 begin
   FilterProducts;
 end;
 
 
-procedure TForm1.ValidatePicturesPath(pathList: TList<TProduct>; dao : TProductDAO);
+procedure TMainScreen.ValidatePicturesPath(pathList: TList<TProduct>; dao : TProductDAO);
 var
   appPath, newPath: string;
   doesNotExists : TList<TProduct>;
@@ -302,7 +314,7 @@ begin
   end;
   if doesNotExists.Count = 0 then exit;
   appPath := ExtractFilePath(ParamStr(0));
-  newPath := appPath + 'Pictures\';
+  newPath := appPath + 'Pictures\Products\';
   for element in doesNotExists do
   begin
     element.SetProductPicture(newPath + ExtractFileName(element.GetProductPicture));

@@ -1,4 +1,4 @@
-object Form1: TForm1
+object MainScreen: TMainScreen
   Left = 0
   Top = 0
   Width = 1257
@@ -134,6 +134,7 @@ object Form1: TForm1
     Font.Name = 'Tahoma'
     Font.Style = [fsUnderline]
     ParentFont = False
+    OnClick = labelLoginClick
   end
   object labelConnectionStatus: TLabel
     Left = 1097
