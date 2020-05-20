@@ -2,7 +2,7 @@ object LoginScreen: TLoginScreen
   Left = 0
   Top = 0
   Caption = 'Loja - Login'
-  ClientHeight = 468
+  ClientHeight = 495
   ClientWidth = 731
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -262,7 +262,7 @@ object LoginScreen: TLoginScreen
   end
   object btnShowPassword: TSpeedButton
     Left = 504
-    Top = 384
+    Top = 392
     Width = 41
     Height = 32
     Glyph.Data = {
@@ -331,12 +331,14 @@ object LoginScreen: TLoginScreen
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000FFFFFFFFFFFF
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000}
     Visible = False
+    OnClick = btnShowPasswordClick
   end
   object labelRecoverPassword: TLabel
     Left = 370
-    Top = 422
+    Top = 430
     Width = 120
     Height = 16
+    Cursor = crHandPoint
     Caption = 'Esqueci minha senha'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clHighlight
@@ -345,6 +347,18 @@ object LoginScreen: TLoginScreen
     Font.Style = [fsItalic, fsUnderline]
     ParentFont = False
     Visible = False
+  end
+  object labelEmailStatus: TLabel
+    Left = 248
+    Top = 352
+    Width = 3
+    Height = 13
+  end
+  object labelLoginStatus: TLabel
+    Left = 220
+    Top = 464
+    Width = 3
+    Height = 13
   end
   object labeledEditEmail: TLabeledEdit
     Left = 240
@@ -367,10 +381,11 @@ object LoginScreen: TLoginScreen
     Font.Style = []
     ParentFont = False
     TabOrder = 0
+    OnChange = labeledEditEmailChange
   end
   object buttonRegister: TButton
-    Left = 8
-    Top = 432
+    Left = 634
+    Top = 459
     Width = 89
     Height = 28
     Caption = 'Cadastrar'
@@ -385,7 +400,7 @@ object LoginScreen: TLoginScreen
   end
   object labeledEditPassword: TLabeledEdit
     Left = 240
-    Top = 384
+    Top = 392
     Width = 250
     Height = 32
     EditLabel.Width = 55
@@ -403,7 +418,25 @@ object LoginScreen: TLoginScreen
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    PasswordChar = '*'
     TabOrder = 2
     Visible = False
+    OnChange = labeledEditPasswordChange
+  end
+  object buttonLogin: TButton
+    Left = 415
+    Top = 457
+    Width = 75
+    Height = 28
+    Caption = 'Entrar'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 3
+    Visible = False
+    OnClick = buttonLoginClick
   end
 end
