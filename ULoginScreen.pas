@@ -26,7 +26,6 @@ type
   private
     { Private declarations }
     function IsEmailValid(email : string) : Boolean;
-    function IsEmailExists(email : string) : Boolean;
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
@@ -93,18 +92,6 @@ begin
   MainScreen := (AOwner as TMainScreen);
 end;
 
-function TLoginScreen.IsEmailExists(email: string): Boolean;
-var
-dao : TUserDAO;
-begin
-  dao := TUserDAO.Create(Self);
-  try
-    Result := dao.IsEmailExists(email);
-  finally
-    dao.Free;
-  end;
-end;
-
 function TLoginScreen.IsEmailValid(email: string): Boolean;
 var
 utils : TUtils;
@@ -132,16 +119,6 @@ begin
     exit;
   end;
 
-  if not IsEmailExists(email) then
-  begin
-    labeledEditPassword.Visible := false;
-    labelRecoverPassword.Visible := false;
-    btnShowPassword.Visible := false;
-    buttonLogin.Visible := false;
-    labelEmailStatus.Caption := 'Email não cadastrado.';
-    labelEmailStatus.Font.Color := StringToColor('clRed');
-    exit;
-  end;
   labelEmailStatus.Caption := '';
   labeledEditPassword.Visible := true;
   labelRecoverPassword.Visible := true;
