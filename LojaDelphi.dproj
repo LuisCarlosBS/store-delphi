@@ -166,6 +166,23 @@
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="UUtils.pas"/>
+        <DCCReference Include="UProductScreen.pas">
+            <Form>ProductScreen</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="UProvider.pas"/>
+        <DCCReference Include="UStock.pas"/>
+        <DCCReference Include="DMProviderDAO.pas">
+            <Form>ProviderDAO</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="DMStockDAO.pas">
+            <Form>StockDAO</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="UProviderPanel.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

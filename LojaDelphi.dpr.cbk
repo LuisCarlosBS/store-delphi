@@ -1,4 +1,4 @@
-program LojaDelphi;
+﻿program LojaDelphi;
 
 uses
   Vcl.Forms,
@@ -22,7 +22,8 @@ uses
   UStock in 'UStock.pas',
   DMProviderDAO in 'DMProviderDAO.pas' {ProviderDAO: TDataModule},
   DMStockDAO in 'DMStockDAO.pas' {StockDAO: TDataModule},
-  UProviderPanel in 'UProviderPanel.pas';
+  UProviderPanel in 'UProviderPanel.pas',
+  UProviderDetailsScreen in 'UProviderDetailsScreen.pas' {ProviderDetailsScreen};
 
 {$R *.res}
 
@@ -30,5 +31,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TMainScreen, MainScreen);
+  Application.CreateForm(TProviderDetailsScreen, ProviderDetailsScreen);
   Application.Run;
 end.
