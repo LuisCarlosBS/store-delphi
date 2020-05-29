@@ -8,7 +8,7 @@ uses
   JvCustomItemViewer, JvImagesViewer, Vcl.Imaging.jpeg, JvScrollBox,
   Vcl.ComCtrls, System.Generics.Collections, UCategory, UProduct, UCategoryPanel, UProductPanel,
   JvExExtCtrls, JvExtComponent, JvItemsPanel, DMProductDAO, Vcl.DBCGrids, UUser,
-  Vcl.Mask, Vcl.DBCtrls;
+  Vcl.Mask, Vcl.DBCtrls, UProvider;
 
 type
   TMainScreen = class(TForm)
@@ -63,7 +63,7 @@ var
 implementation
 
 uses
- DMCategoryDAO, ULoginScreen;
+ DMCategoryDAO, ULoginScreen, UStock, DMProviderDAO, DMStockDAO;
 
 {$R *.dfm}
 
@@ -214,7 +214,15 @@ procedure TMainScreen.CreateProductPanels(productsList: TList<TProduct>);
 var
   i: Integer;
   panel: TProductPanel;
+  providers : TList<TProvider>;
+  product : TProduct;
+  providerDao : TProviderDAO;
+  nome : string;
+  stockDao : TStockDAO;
+  provider: TProvider;
 begin
+  providerDao := TProviderDAO.Create(self);
+  stockDao := TStockDAO.Create(Self);
   if createdProductPanels.Count > 0 then
   begin
     for panel in createdProductPanels do
@@ -224,13 +232,19 @@ begin
     createdProductPanels.Clear;
   end;
 
-  for i := 0 to Pred(productsList.Count) do
+  for product in productsList do
   begin
+    providers := TList<TProvider>.Create;
+    providers := stockDao.GetProvidersByProduct(product);
     panel := TProductPanel.Create(Self);
-    panel.CreateAll(scrlbxProducts,productsList.Items[i]);
+    panel.Product := product;
+    panel.Providers := providers;
+    panel.CreateAll(scrlbxProducts);
     createdProductPanels.Add(panel);
   end;
   PositionProductPanels(panel.Width, panel.Height, createdProductPanels);
+  providerDao.Free;
+  stockDao.Free;
 end;
 
 procedure TMainScreen.FormDblClick(Sender: TObject);
