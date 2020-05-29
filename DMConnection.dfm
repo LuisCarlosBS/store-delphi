@@ -4,9 +4,6 @@ object Connection: TConnection
   Width = 308
   object connection1: TFDConnection
     Params.Strings = (
-      
-        'Database=C:\Users\lucar\Documents\Embarcadero\Studio\Projects\Lo' +
-        'ja Delphi\Database\STOREDELPHI.FDB'
       'User_Name=SYSDBA'
       'Password=masterkey'
       'CharacterSet=UTF8'
