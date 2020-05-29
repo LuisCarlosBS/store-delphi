@@ -15,7 +15,6 @@ type
     queryLoadProducts: TFDQuery;
     query1: TFDQuery;
     queryUpdateProductPicture: TFDQuery;
-    ds1: TDataSource;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -68,7 +67,6 @@ product : TProduct;
   i: Integer;
 begin
   products := TList<TProduct>.Create;
-  queryLoadProducts.SQL.Add(sql);
   queryLoadProducts.Open;
   while not queryLoadProducts.Eof do
   begin
@@ -77,7 +75,6 @@ begin
     product.SetIDCategory(queryLoadProducts.FieldByName('IDCategory').AsInteger);
     product.SetProductName(queryLoadProducts.FieldByName('ProductName').AsString);
     product.SetProductDescription(queryLoadProducts.FieldByName('ProductDescription').AsString);
-    product.SetUnitPrice(queryLoadProducts.FieldByName('UnitPrice').AsFloat);
     product.SetProductPicture(queryLoadProducts.FieldByName('ProductPicture').AsString);
     product.SetActive(queryLoadProducts.FieldByName('Active').AsBoolean);
     products.Add(product);

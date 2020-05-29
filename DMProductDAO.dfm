@@ -4,7 +4,6 @@ object ProductDAO: TProductDAO
   Height = 459
   Width = 540
   object queryLoadProducts: TFDQuery
-    Active = True
     Connection = Connection.connection1
     SQL.Strings = (
       'SELECT * FROM Products')
@@ -22,10 +21,5 @@ object ProductDAO: TProductDAO
     Connection = Connection.connection1
     Left = 192
     Top = 264
-  end
-  object ds1: TDataSource
-    DataSet = queryLoadProducts
-    Left = 320
-    Top = 272
   end
 end
